@@ -160,10 +160,10 @@ ImGui::GetStyle().FrameBorderSize = 0.0f;
 ImGui::GetStyle().WindowBorderSize = 0.0f;
 ImGui::GetStyle().ChildBorderSize = 1.0f;
 ImGui::GetStyle().TabBorderSize = 1.0f;
-ImGui::GetStyle().ScrollbarSize = 20.0f;
+ImGui::GetStyle().ScrollbarSize = 0.0f;
 ImGuiStyle& style = ImGui::GetStyle();
 ImVec4* colors = style.Colors;
-style.WindowRounding = 4.0f;
+style.WindowRounding = 12.0f;
 style.ChildRounding = 3.0f;
 style.FrameRounding = 50.0f;
 style.GrabRounding = 0.0f;
@@ -376,7 +376,7 @@ ImDrawList*draw = ImGui::GetBackgroundDrawList();
         ImGui::SetNextWindowSize(ImVec2(520, 60), ImGuiCond_Always);
     }
     
-    if (ImGui::Begin(" RISHABH MODS | MOBILE ", 0, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoCollapse)) {
+    if (ImGui::Begin(" DEXXTER | MOBILE ", 0, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoCollapse)) {
     
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     ImVec2 titleBarMin = window->Pos;
@@ -403,12 +403,14 @@ ImDrawList*draw = ImGui::GetBackgroundDrawList();
         titleBarPressed = false;
     }
     
+    float purpleLineHeight = 8.0f;
     ImVec2 lineStart = ImVec2(window->Pos.x, window->Pos.y + window->TitleBarHeight());
-    ImVec2 lineEnd = ImVec2(window->Pos.x + window->Size.x, window->Pos.y + window->TitleBarHeight());
+    ImVec2 lineEnd = ImVec2(window->Pos.x + window->Size.x, window->Pos.y + window->TitleBarHeight() + purpleLineHeight);
     window->DrawList->AddRectFilled(
         lineStart,
-        ImVec2(lineEnd.x, lineStart.y + 8),
-        IM_COL32(221, 0, 255, 255)
+        lineEnd,
+        IM_COL32(221, 0, 255, 255),
+        0.0f
     );
     
     if (!menuCollapsed) {
@@ -427,10 +429,6 @@ ImDrawList*draw = ImGui::GetBackgroundDrawList();
     ImGui::Checkbox(" Enable Function", &Enable);
     ImGui::Separator();
         ImGui::Checkbox(" Aimbot Legit", &Aimbot);
-    ImGui::Separator();
-        ImGui::Checkbox(" Aimbot Rage", &AimbotRage);
-    ImGui::Separator();
-        ImGui::Checkbox(" Aimbot Shoulder", &AimbotShoulder);
     ImGui::Separator();
     ImGui::Checkbox(" Aim Kill", &AimKill1);
     ImGui::Separator();
