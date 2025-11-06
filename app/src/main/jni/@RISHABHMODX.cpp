@@ -191,9 +191,9 @@ colors[ImGuiCol_BorderShadow]           = ImColor(0, 0, 0, 0);
 colors[ImGuiCol_FrameBg]                = ImColor(36, 36, 36, 255);
 colors[ImGuiCol_FrameBgHovered]         = ImColor(36, 36, 36, 255);
 colors[ImGuiCol_FrameBgActive]          = ImColor(36, 36, 36, 255);
-colors[ImGuiCol_TitleBg]                = ImColor(24, 24, 26, 255);
-colors[ImGuiCol_TitleBgActive]          = ImColor(24, 24, 26, 255);
-colors[ImGuiCol_TitleBgCollapsed]       = ImColor(24, 24, 26, 255);
+colors[ImGuiCol_TitleBg]                = ImColor(147, 112, 219, 255);
+colors[ImGuiCol_TitleBgActive]          = ImColor(147, 112, 219, 255);
+colors[ImGuiCol_TitleBgCollapsed]       = ImColor(147, 112, 219, 255);
 colors[ImGuiCol_MenuBarBg]              = ImColor(20, 20, 20, 255);
 colors[ImGuiCol_ScrollbarBg]            = ImColor(20, 20, 20, 255);
 colors[ImGuiCol_ScrollbarGrab]          = ImColor(80, 80, 80, 255);
@@ -418,7 +418,7 @@ ImDrawList*draw = ImGui::GetBackgroundDrawList();
         ImGui::SetNextWindowContentSize(ImVec2(0, 0));
     }
     
-    if (ImGui::Begin("      DEXXTER | MOBILE ", 0, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoCollapse | (menuCollapsed ? ImGuiWindowFlags_NoScrollbar : 0))) {
+    if (ImGui::Begin("DEXXTER | MOBILE ", 0, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoCollapse | (menuCollapsed ? ImGuiWindowFlags_NoScrollbar : 0))) {
     
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     
@@ -450,36 +450,49 @@ ImDrawList*draw = ImGui::GetBackgroundDrawList();
         titleBarPressed = false;
     }
     
-    float cycle = fmodf(animTime * 0.5f, 3.0f);
-    ImU32 borderColor;
-    if (cycle < 1.0f) {
-        borderColor = IM_COL32(0, 255, 0, 255);
-    } else if (cycle < 2.0f) {
-        borderColor = IM_COL32(221, 0, 255, 255);
-    } else {
-        borderColor = IM_COL32(255, 0, 0, 255);
-    }
+    ImU32 purpleCream = IM_COL32(147, 112, 219, 255);
+    
+    ImDrawList* foregroundDraw = ImGui::GetForegroundDrawList();
+       
+    foregroundDraw->AddRectFilled(
+        titleBarMin,
+        titleBarMax,
+        purpleCream,
+        window->WindowRounding,
+        ImDrawFlags_RoundCornersTop
+    );
+    
+    ImVec2 textSize = ImGui::CalcTextSize("DEXXTER | MOBILE ");
+    float titleBarCenterX = window->Pos.x + (window->Size.x * 0.5f);
+    float textPosX = titleBarCenterX - (textSize.x * 0.5f);
+    float textPosY = window->Pos.y + (window->TitleBarHeight() - textSize.y) * 0.5f;
+    
+    foregroundDraw->AddText(
+        ImVec2(textPosX, textPosY),
+        IM_COL32(255, 255, 255, 255),
+        "DEXXTER | MOBILE "
+    );
     
     float borderThickness = 1.5f;
     ImVec2 windowMin = window->Pos;
     ImVec2 windowMax = ImVec2(window->Pos.x + window->Size.x, window->Pos.y + window->Size.y);
     
-    window->DrawList->AddRect(
+    foregroundDraw->AddRect(
         windowMin,
         windowMax,
-        borderColor,
+        purpleCream,
         window->WindowRounding,
         0,
         borderThickness
     );
     
     if (logoTexture != 0) {
-        float logoSize = window->TitleBarHeight() - 2.0f;
-        ImVec2 logoPos = ImVec2(window->Pos.x + 8.0f, window->Pos.y + 4.0f);
+        float logoSize = window->TitleBarHeight() - 8.0f;
+        float logoSpacing = 12.0f;
+        ImVec2 logoPos = ImVec2(textPosX - logoSize - logoSpacing, window->Pos.y + 6.0f);
         ImVec2 logoEnd = ImVec2(logoPos.x + logoSize, logoPos.y + logoSize);
         
-        ImDrawList* foreground = ImGui::GetForegroundDrawList();
-        foreground->AddImageRounded(
+        foregroundDraw->AddImageRounded(
             (void*)(intptr_t)logoTexture,
             logoPos,
             logoEnd,
