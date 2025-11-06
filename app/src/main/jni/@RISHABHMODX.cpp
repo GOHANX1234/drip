@@ -154,7 +154,7 @@ ImGui_ImplOpenGL3_Init("#version 300 es");
 
 ImGuiIO &io = ImGui::GetIO();
 ImGui::GetStyle().WindowPadding = ImVec2(6, 6);
-ImGui::GetStyle().FramePadding = ImVec2(8, 8);
+ImGui::GetStyle().FramePadding = ImVec2(8, 12);
 ImGui::GetStyle().ItemSpacing = ImVec2(10, 10); 
 ImGui::GetStyle().FrameBorderSize = 0.0f;
 ImGui::GetStyle().WindowBorderSize = 0.0f;
@@ -169,7 +169,8 @@ style.FrameRounding = 50.0f;
 style.GrabRounding = 0.0f;
 style.PopupRounding = 0.0f;
 style.TabRounding = 0.0f;
-style.ScrollbarRounding = 0.0f;   
+style.ScrollbarRounding = 0.0f;
+style.WindowTitleAlign = ImVec2(0.5f, 0.5f);   
 
 
 colors[ImGuiCol_Text]                   = ImColor(255, 255, 255, 255);
@@ -236,9 +237,9 @@ colors[ImGuiCol_ModalWindowDimBg]       = ImColor(0, 0, 0, 150);
             icons_config.OversampleH = 2.5;
             icons_config.OversampleV = 2.5;
             
-		  io.Fonts->AddFontFromMemoryTTF((void *)RISHABHPAPA_data, RISHABHPAPA_size, 30.0f, NULL, io.Fonts->GetGlyphRangesChineseFull());
-		  io.Fonts->AddFontFromMemoryCompressedTTF(font_awesome_data, font_awesome_size, 50.0f, &icons_config, icons_ranges);
-		  io.Fonts->AddFontFromMemoryTTF(const_cast<std::uint8_t*>(Custom), sizeof(Custom), 24.f, &CustomFont);
+                  io.Fonts->AddFontFromMemoryTTF((void *)RISHABHPAPA_data, RISHABHPAPA_size, 30.0f, NULL, io.Fonts->GetGlyphRangesChineseFull());
+                  io.Fonts->AddFontFromMemoryCompressedTTF(font_awesome_data, font_awesome_size, 50.0f, &icons_config, icons_ranges);
+                  io.Fonts->AddFontFromMemoryTTF(const_cast<std::uint8_t*>(Custom), sizeof(Custom), 24.f, &CustomFont);
          // memset(&Config, 0, sizeof(sConfig));
 //
 
@@ -329,16 +330,16 @@ inline EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
  // Window background = black
 
     ImGuiIO &io = ImGui::GetIO();
-	//Darkness();
-	// Thiết lập màu chủ đề
-	//ImVec4* colors = ImGui::GetStyle().Colors;
+        //Darkness();
+        // Thiết lập màu chủ đề
+        //ImVec4* colors = ImGui::GetStyle().Colors;
 
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplAndroid_NewFrame(g_GlWidth, g_GlHeight);
     ImGui::NewFrame();
-	if (ImGuiOK) {
-	    int touchCount = (((int (*)())(Class_Input__get_touchCount))());
+        if (ImGuiOK) {
+            int touchCount = (((int (*)())(Class_Input__get_touchCount))());
     if (touchCount > 0) {
         UnityEngine_Touch_Fields touch = ((UnityEngine_Touch_Fields(*)(int))(Class_Input__GetTouch))(0);
         float reverseY = io.DisplaySize.y - touch.m_Position.fields.y;
@@ -360,18 +361,58 @@ inline EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
                 break;
         }
     }
-	}
-	
+        }
+        
 DrawESP(g_GlWidth, g_GlHeight);
 ImDrawList*draw = ImGui::GetBackgroundDrawList();
     
-    ImGui::SetNextWindowSize(ImVec2(520, 550), ImGuiCond_Once);
-    if (ImGui::Begin(" RISHABH MODS | MOBILE ", 0, ImGuiWindowFlags_NoBringToFrontOnFocus)) {
-    ImGui::GetWindowDrawList()->AddRectFilled(
-    ImGui::GetCursorScreenPos(),
-    ImVec2(ImGui::GetCursorScreenPos().x + ImGui::GetWindowWidth(), ImGui::GetCursorScreenPos().y + 5),
-    IM_COL32(221, 0, 255, 255)
+    static bool menuCollapsed = false;
+    static ImVec2 titleBarClickPos = ImVec2(0, 0);
+    static bool titleBarPressed = false;
+    
+    if (!menuCollapsed) {
+        ImGui::SetNextWindowSize(ImVec2(520, 550), ImGuiCond_Always);
+    } else {
+        ImGui::SetNextWindowSize(ImVec2(520, 60), ImGuiCond_Always);
+    }
+    
+    if (ImGui::Begin(" RISHABH MODS | MOBILE ", 0, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoCollapse)) {
+    
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    ImVec2 titleBarMin = window->Pos;
+    ImVec2 titleBarMax = ImVec2(window->Pos.x + window->Size.x, window->Pos.y + window->TitleBarHeight());
+    
+    ImVec2 mousePos = ImGui::GetMousePos();
+    bool mouseInTitleBar = (mousePos.x >= titleBarMin.x && mousePos.x <= titleBarMax.x && 
+                            mousePos.y >= titleBarMin.y && mousePos.y <= titleBarMax.y);
+    
+    if (mouseInTitleBar && ImGui::IsMouseClicked(0)) {
+        titleBarClickPos = mousePos;
+        titleBarPressed = true;
+    }
+    
+    if (titleBarPressed && ImGui::IsMouseReleased(0)) {
+        ImVec2 releasePos = ImGui::GetMousePos();
+        float dragDistance = sqrtf(
+            (releasePos.x - titleBarClickPos.x) * (releasePos.x - titleBarClickPos.x) +
+            (releasePos.y - titleBarClickPos.y) * (releasePos.y - titleBarClickPos.y)
+        );
+        if (dragDistance < 10.0f) {
+            menuCollapsed = !menuCollapsed;
+        }
+        titleBarPressed = false;
+    }
+    
+    ImVec2 lineStart = ImVec2(window->Pos.x, window->Pos.y + window->TitleBarHeight());
+    ImVec2 lineEnd = ImVec2(window->Pos.x + window->Size.x, window->Pos.y + window->TitleBarHeight());
+    window->DrawList->AddRectFilled(
+        lineStart,
+        ImVec2(lineEnd.x, lineStart.y + 8),
+        IM_COL32(221, 0, 255, 255)
     );
+    
+    if (!menuCollapsed) {
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 8);
     ImGui::Spacing();
     static int tab = 0;
     ImGui::Spacing();
@@ -385,31 +426,33 @@ ImDrawList*draw = ImGui::GetBackgroundDrawList();
     {
     ImGui::Checkbox(" Enable Function", &Enable);
     ImGui::Separator();
-	ImGui::Checkbox(" Aimbot Legit", &Aimbot);
+        ImGui::Checkbox(" Aimbot Legit", &Aimbot);
     ImGui::Separator();
-	ImGui::Checkbox(" Aimbot Rage", &AimbotRage);
+        ImGui::Checkbox(" Aimbot Rage", &AimbotRage);
     ImGui::Separator();
-	ImGui::Checkbox(" Aimbot Shoulder", &AimbotShoulder);
+        ImGui::Checkbox(" Aimbot Shoulder", &AimbotShoulder);
     ImGui::Separator();
     ImGui::Checkbox(" Aim Kill", &AimKill1);
     ImGui::Separator();
-	ImGui::SliderFloat((""), &Fov_Aim, 0.0f, 9000.0f, "%.0f°", ImGuiSliderFlags_AlwaysClamp | ImGuiSliderFlags_NoInput);
+        ImGui::SliderFloat((""), &Fov_Aim, 0.0f, 9000.0f, "%.0f°", ImGuiSliderFlags_AlwaysClamp | ImGuiSliderFlags_NoInput);
     }
     else if (tab == 1)
     {
-	ImGui::Checkbox(" Enable Esp", &PlayEsp);
-	ImGui::Separator();
+        ImGui::Checkbox(" Enable Esp", &PlayEsp);
+        ImGui::Separator();
     ImGui::Checkbox(" Enable Line", &Config.ESP.Line);
-	ImGui::Separator();
+        ImGui::Separator();
     ImGui::Checkbox(" Enable Box", &Config.ESP.Box);
-	ImGui::Separator();
-	ImGui::Checkbox(" Enable Player", &EnaPlayer);
-	ImGui::Separator();
+        ImGui::Separator();
+        ImGui::Checkbox(" Enable Player", &EnaPlayer);
+        ImGui::Separator();
     }
     else if (tab == 2)
     {
     ImGui::Text("Info Settings");
-    }}
+    }
+    }
+    }
     ImGui::End();
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -445,7 +488,7 @@ inline void StartGUI() {
     if (NULL != ptr_eglSwapBuffer) {
         DobbyHook((void *)ptr_eglSwapBuffer, (void*)hook_eglSwapBuffers, (void**)&old_eglSwapBuffers);
             LOGD("Gui Started");
-			hack_injec();
+                        hack_injec();
         }
     }
 
@@ -581,13 +624,13 @@ bool is_current_process(const char* target_name) {
 
 
 void hack_injec() {
-	while (!unityMap.isValid()) {
+        while (!unityMap.isValid()) {
         unityMap = KittyMemory::getLibraryBaseMap("libunity.so");
-		anogsMap = KittyMemory::getLibraryBaseMap("libanogs.so");
-		il2cppMap = KittyMemory::getLibraryBaseMap("libil2cpp.so");
-		
+                anogsMap = KittyMemory::getLibraryBaseMap("libanogs.so");
+                il2cppMap = KittyMemory::getLibraryBaseMap("libil2cpp.so");
+                
         sleep(6);
-	}
+        }
     
  sleep(5);
     Il2CppAttach();
@@ -598,17 +641,17 @@ void hack_injec() {
         Wallhack();
     }
     A64HookFunction(Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Player"), OBFUSCATE("UpdateBehavior"), 2), (void *) _LateUpdate, (void **) &LateUpdate);
-   	OpenURL = (void (*)(String *))Il2CppGetMethodOffset("UnityEngine.CoreModule.dll","UnityEngine","Application","OpenURL",1);
+        OpenURL = (void (*)(String *))Il2CppGetMethodOffset("UnityEngine.CoreModule.dll","UnityEngine","Application","OpenURL",1);
     ImGuiOK = true;
 }
 
 
 void hack_thread(pid_t pid) {
-	
-	StartGUI();
-	while(pid == -1){pid = get_pid_by_name("com.dts.freefireth");} 
-	remote_inject(pid);
-	writeLog(to_string(pid));
+        
+        StartGUI();
+        while(pid == -1){pid = get_pid_by_name("com.dts.freefireth");} 
+        remote_inject(pid);
+        writeLog(to_string(pid));
     
 }
 
