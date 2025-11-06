@@ -34,6 +34,7 @@
 #include "FontTest.h"
 #include "RISHABH-NIKU/Iconcpp.h"
 #include <fstream>
+#include "dexxter_logo.h"
 void (*OpenURL)(String *url);
 #include "GHr_Ryuuka/Tools/Call_Tools.h"
 using json = nlohmann::json;
@@ -264,6 +265,26 @@ bool clearMousePos = true;
 bool ImGuiOK = false;
 bool initImGui = false;
 
+GLuint logoTexture = 0;
+int logoWidth = 0, logoHeight = 0;
+
+void LoadLogoTexture() {
+    if (logoTexture != 0) return;
+    
+    int channels;
+    unsigned char* image_data = stbi_load_from_memory(dexxter_data, sizeof(dexxter_data), &logoWidth, &logoHeight, &channels, 4);
+    
+    if (image_data == nullptr) return;
+    
+    glGenTextures(1, &logoTexture);
+    glBindTexture(GL_TEXTURE_2D, logoTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, logoWidth, logoHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
+    
+    stbi_image_free(image_data);
+}
+
 
 void VerticalTab(const char* label, int tab_index, int* p_selected_tab) {
 ImGuiStyle& style = ImGui::GetStyle();
@@ -366,19 +387,29 @@ inline EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 DrawESP(g_GlWidth, g_GlHeight);
 ImDrawList*draw = ImGui::GetBackgroundDrawList();
     
+    LoadLogoTexture();
+    
     static bool menuCollapsed = false;
     static ImVec2 titleBarClickPos = ImVec2(0, 0);
     static bool titleBarPressed = false;
+    static float animTime = 0.0f;
+    animTime += io.DeltaTime;
     
     if (!menuCollapsed) {
         ImGui::SetNextWindowSize(ImVec2(520, 550), ImGuiCond_Always);
     } else {
-        ImGui::SetNextWindowSize(ImVec2(520, 60), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(520, 0), ImGuiCond_Always);
+        ImGui::SetNextWindowContentSize(ImVec2(0, 0));
     }
     
-    if (ImGui::Begin(" DEXXTER | MOBILE ", 0, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoCollapse)) {
+    if (ImGui::Begin("      DEXXTER | MOBILE ", 0, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoCollapse | (menuCollapsed ? ImGuiWindowFlags_NoScrollbar : 0))) {
     
     ImGuiWindow* window = ImGui::GetCurrentWindow();
+    
+    if (menuCollapsed) {
+        float collapsedHeight = window->TitleBarHeight();
+        ImGui::SetWindowSize(ImVec2(520, collapsedHeight));
+    }
     ImVec2 titleBarMin = window->Pos;
     ImVec2 titleBarMax = ImVec2(window->Pos.x + window->Size.x, window->Pos.y + window->TitleBarHeight());
     
@@ -403,15 +434,44 @@ ImDrawList*draw = ImGui::GetBackgroundDrawList();
         titleBarPressed = false;
     }
     
-    float purpleLineHeight = 8.0f;
-    ImVec2 lineStart = ImVec2(window->Pos.x, window->Pos.y + window->TitleBarHeight());
-    ImVec2 lineEnd = ImVec2(window->Pos.x + window->Size.x, window->Pos.y + window->TitleBarHeight() + purpleLineHeight);
-    window->DrawList->AddRectFilled(
-        lineStart,
-        lineEnd,
-        IM_COL32(221, 0, 255, 255),
-        0.0f
+    float cycle = fmodf(animTime * 0.5f, 3.0f);
+    ImU32 borderColor;
+    if (cycle < 1.0f) {
+        borderColor = IM_COL32(0, 255, 0, 255);
+    } else if (cycle < 2.0f) {
+        borderColor = IM_COL32(221, 0, 255, 255);
+    } else {
+        borderColor = IM_COL32(255, 0, 0, 255);
+    }
+    
+    float borderThickness = 1.5f;
+    ImVec2 windowMin = window->Pos;
+    ImVec2 windowMax = ImVec2(window->Pos.x + window->Size.x, window->Pos.y + window->Size.y);
+    
+    window->DrawList->AddRect(
+        windowMin,
+        windowMax,
+        borderColor,
+        window->WindowRounding,
+        0,
+        borderThickness
     );
+    
+    if (logoTexture != 0) {
+        float logoSize = window->TitleBarHeight() - 8.0f;
+        ImVec2 logoPos = ImVec2(window->Pos.x + 8.0f, window->Pos.y + 4.0f);
+        ImVec2 logoEnd = ImVec2(logoPos.x + logoSize, logoPos.y + logoSize);
+        
+        window->DrawList->AddImageRounded(
+            (void*)(intptr_t)logoTexture,
+            logoPos,
+            logoEnd,
+            ImVec2(0, 0),
+            ImVec2(1, 1),
+            IM_COL32(255, 255, 255, 255),
+            logoSize * 0.5f
+        );
+    }
     
     if (!menuCollapsed) {
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 8);
