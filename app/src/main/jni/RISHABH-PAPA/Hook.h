@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <stdio.h>
@@ -24,7 +23,7 @@
 inline static int g_GlHeight, g_GlWidth;
 typedef char PACKAGENAME;
 
-#define ICON_FA_TELEGRAM "\xef\x8b\x86"	// U+f2c6
+#define ICON_FA_TELEGRAM "\xef\x8b\x86" // U+f2c6
 #define ICON_FA_EXCLAMATION_TRIANGLE "\xef\x81\xb1" 
 
 float density = -1;
@@ -36,8 +35,8 @@ struct cfg {
         bool Box = false;
         bool Box3D = false;
         bool Line = false;
-		bool Info = false;
-		//bool Egline = false;
+                bool Info = false;
+                //bool Egline = false;
         bool Health = false;
         bool Distance = false;
         bool IsName = false;
@@ -62,8 +61,6 @@ bool Firewall = true;
 bool health = false;
 bool Headshot = false;
 bool AimNewF = true;
-bool AimbotRage = false;
-bool AimbotShoulder = false;
 bool PlayEsp = false;
 bool EnaPlayer = false;
 //int showline = 0;
@@ -90,7 +87,7 @@ int showbox = 1;
 struct sColor {
         float circle[4] = {0 / 255.0f, 255 / 255.0f, 0 / 255.0f, 255 / 255.0f};
 
-		float box[4] = {255 / 255.0f, 255 / 255.0f, 255 / 255.0f, 255 / 255.0f};
+                float box[4] = {255 / 255.0f, 255 / 255.0f, 255 / 255.0f, 255 / 255.0f};
         float line1[4] = {255 / 255.0f, 255 / 255.0f, 255 / 255.0f, 255 / 255.0f};
         float box1[4] = {255 / 255.0f, 255 / 255.0f, 255 / 255.0f, 255 / 255.0f};
         float box3d1[4] = {255 / 255.0f, 255 / 255.0f, 255 / 255.0f, 255 / 255.0f};
@@ -575,9 +572,9 @@ void _DarkUpdateX(void *player) {
 
 void (*LateUpdate)(void *Player);
 void _LateUpdate(void *Player){
-	
+        
 int totalEnemies = 0; 
-		
+                
 if (Player != NULL) {
 if (Aimbot) {
 
@@ -612,9 +609,9 @@ if (closestEnemy != NULL && LocalPlayer != NULL && CurrentMatch != NULL) {
            if (WeaponHand) {
             
 
-	       
-	       
-	       if (AimKill1) {
+               
+               
+               if (AimKill1) {
          if (damageCooldown <= 0) {
               StartTakeDamage(closestEnemy);
               StartonFiring(LocalPlayer, WeaponHand);
@@ -658,13 +655,13 @@ orig_mrSilentAim(_this, a1, a2);
 orig_mrSilentAim(_this, a1, a2);
 }
 }
-	
+        
 inline void DrawESP(float screenWidth, float screenHeight) {
     ImDrawList*draw = ImGui::GetBackgroundDrawList();
     if (!draw) return;   
     
-    	 int totalEnemies = 0;
-		 
+         int totalEnemies = 0;
+                 
         if (Enable) {
         void* current_Match = Curent_Match();
         void* local_player = GetLocalPlayer(current_Match);
@@ -819,7 +816,7 @@ inline void DrawESP(float screenWidth, float screenHeight) {
 {
  
     ImDrawList* draw = ImGui::GetBackgroundDrawList();
-	 int totalEnemies = 0;
+         int totalEnemies = 0;
     // The text to be displayed
     std::string topText = " TOTAL ENEMIES - ";
     std::string enemiesCount = std::to_string(totalEnemies);
