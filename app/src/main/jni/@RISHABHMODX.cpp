@@ -2,6 +2,13 @@
 #include <unistd.h>
 #include <thread>
 #include <limits>
+
+#ifndef LOGI
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "DEXXTER", __VA_ARGS__)
+#endif
+#ifndef LOGE
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "DEXXTER", __VA_ARGS__)
+#endif
 #include <KittyMemory/KittyMemory.h>
 #include <KittyMemory/MemoryPatch.h>
 #include <KittyMemory/KittyScanner.h>
@@ -272,17 +279,26 @@ void LoadLogoTexture() {
     if (logoTexture != 0) return;
     
     int channels;
-    unsigned char* image_data = stbi_load_from_memory(dexxter_data, sizeof(dexxter_data), &logoWidth, &logoHeight, &channels, 4);
+    unsigned char* image_data = stbi_load_from_memory(dexxter_data, dexxter_size, &logoWidth, &logoHeight, &channels, 4);
     
-    if (image_data == nullptr) return;
+    if (image_data == nullptr) {
+        LOGE("Failed to load logo texture from memory!");
+        return;
+    }
+    
+    LOGI("Logo loaded successfully: %dx%d, channels: %d", logoWidth, logoHeight, channels);
     
     glGenTextures(1, &logoTexture);
     glBindTexture(GL_TEXTURE_2D, logoTexture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, logoWidth, logoHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
     
     stbi_image_free(image_data);
+    
+    LOGI("Logo texture created with ID: %u", logoTexture);
 }
 
 
@@ -458,19 +474,23 @@ ImDrawList*draw = ImGui::GetBackgroundDrawList();
     );
     
     if (logoTexture != 0) {
-        float logoSize = window->TitleBarHeight() - 8.0f;
+        float logoSize = window->TitleBarHeight() - 2.0f;
         ImVec2 logoPos = ImVec2(window->Pos.x + 8.0f, window->Pos.y + 4.0f);
         ImVec2 logoEnd = ImVec2(logoPos.x + logoSize, logoPos.y + logoSize);
         
-        window->DrawList->AddImageRounded(
+        ImDrawList* foreground = ImGui::GetForegroundDrawList();
+        foreground->AddImageRounded(
             (void*)(intptr_t)logoTexture,
             logoPos,
             logoEnd,
             ImVec2(0, 0),
             ImVec2(1, 1),
             IM_COL32(255, 255, 255, 255),
-            logoSize * 0.5f
+            logoSize * 0.5f,
+            ImDrawFlags_RoundCornersAll
         );
+    } else {
+        LOGE("Logo texture not loaded! logoTexture = %u", logoTexture);
     }
     
     if (!menuCollapsed) {
