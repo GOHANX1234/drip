@@ -14,32 +14,32 @@ struct message_PVector3IntPos_StaticFields {
 
 
 struct message_PVector3IntPos_VTable {
-	VirtualInvokeData _0_Equals;
-	VirtualInvokeData _1_Finalize;
-	VirtualInvokeData _2_GetHashCodek;
-	VirtualInvokeData _3_ToString;
-	VirtualInvokeData _6_Serialize;
-	VirtualInvokeData _7_UnSerialize;
-	VirtualInvokeData _8_CanCache;
-	VirtualInvokeData _9_Recycle;
+        VirtualInvokeData _0_Equals;
+        VirtualInvokeData _1_Finalize;
+        VirtualInvokeData _2_GetHashCodek;
+        VirtualInvokeData _3_ToString;
+        VirtualInvokeData _6_Serialize;
+        VirtualInvokeData _7_UnSerialize;
+        VirtualInvokeData _8_CanCache;
+        VirtualInvokeData _9_Recycle;
 };
 
 
 struct message_PVector3IntPos_c {
-	Il2CppClass_1 _1;
-	message_PVector3IntPos_StaticFields* static_fields;
-	Il2CppClass_2 _2;
-	message_PVector3IntPos_VTable vtable;
+        Il2CppClass_1 _1;
+        message_PVector3IntPos_StaticFields* static_fields;
+        Il2CppClass_2 _2;
+        message_PVector3IntPos_VTable vtable;
 };
 
 struct message_PVector3IntPos_o;
 struct message_PVector3IntPos_o {
-	message_PVector3IntPos_c *klass;
-	void *monitor;
-	bool UDPClientMessageBase_m_GetFromPool;
-	int32_t X;
-	int32_t Y;
-	int32_t Z;
+        message_PVector3IntPos_c *klass;
+        void *monitor;
+        bool UDPClientMessageBase_m_GetFromPool;
+        int32_t X;
+        int32_t Y;
+        int32_t Z;
 };
 
 
@@ -129,30 +129,30 @@ struct GCommon_TimeService_o;
 struct GCommon_TimeService_StaticFields {
 };
 struct GCommon_TimeService_VTable {
-	VirtualInvokeData _0_Equals;
-	VirtualInvokeData _1_Finalize;
-	VirtualInvokeData _2_GetHashCodek;
-	VirtualInvokeData _3_ToString;
+        VirtualInvokeData _0_Equals;
+        VirtualInvokeData _1_Finalize;
+        VirtualInvokeData _2_GetHashCodek;
+        VirtualInvokeData _3_ToString;
 };
 
 struct GCommon_TimeService_c {
-	Il2CppClass_1 _1;
-	GCommon_TimeService_StaticFields* static_fields;
-	Il2CppClass_2 _2;
-	GCommon_TimeService_VTable vtable;
+        Il2CppClass_1 _1;
+        GCommon_TimeService_StaticFields* static_fields;
+        Il2CppClass_2 _2;
+        GCommon_TimeService_VTable vtable;
 };
 
 struct GCommon_TimeService_o {
-	GCommon_TimeService_c *klass;
-	void *monitor;
-	float m_GameTime;
-	float m_LastGameTime;
-	float m_DeltaTime;
-	uint32_t m_DeltaTickCount;
-	uint32_t m_TickCount;
-	uint32_t m_RealDoLogicTickCount;
-	bool m_UsingFixedDeltaTime;
-	float m_FixedDeltaTime;
+        GCommon_TimeService_c *klass;
+        void *monitor;
+        float m_GameTime;
+        float m_LastGameTime;
+        float m_DeltaTime;
+        uint32_t m_DeltaTickCount;
+        uint32_t m_TickCount;
+        uint32_t m_RealDoLogicTickCount;
+        bool m_UsingFixedDeltaTime;
+        float m_FixedDeltaTime;
 };
 
 
@@ -213,6 +213,11 @@ struct GCommon_TimeService_o {
 
 #define Current_Local_Player1 Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW"), OBFUSCATE("GameFacade"), OBFUSCATE("CurrentLocalPlayer"), 0)
 
+#define offset_FF_DoFire (uintptr_t) Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Weapon"), OBFUSCATE("DoFire"), 0)
+#define offset_FF_CanFire (uintptr_t) Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Weapon"), OBFUSCATE("CanFire"), 0)
+#define offset_FF_GetAmmo (uintptr_t) Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Weapon"), OBFUSCATE("get_AmmoLeftInCurrentClip"), 0)
+#define offset_FF_SyncAmmo (uintptr_t) Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Weapon"), OBFUSCATE("SyncAmmoLeftInCurrentClip"), 1)
+
 
 
 
@@ -222,6 +227,26 @@ struct GCommon_TimeService_o {
 static int GetWeapon(void* enemy) {
     int (*GetWeapon)(void *player) = (int(*)(void *))(offset_GetWeaponID);
     return GetWeapon(enemy);
+}
+
+static void FF_Weapon_DoFire(void* weapon) {
+    if (!weapon || !offset_FF_DoFire) return;
+    ((void (*)(void*))(offset_FF_DoFire))(weapon);
+}
+
+static bool FF_Weapon_CanFire(void* weapon) {
+    if (!weapon || !offset_FF_CanFire) return false;
+    return ((bool (*)(void*))(offset_FF_CanFire))(weapon);
+}
+
+static int FF_Weapon_GetAmmo(void* weapon) {
+    if (!weapon || !offset_FF_GetAmmo) return 0;
+    return ((int (*)(void*))(offset_FF_GetAmmo))(weapon);
+}
+
+static void FF_Weapon_SyncAmmo(void* weapon, int ammo) {
+    if (!weapon || !offset_FF_SyncAmmo) return;
+    ((void (*)(void*, int))(offset_FF_SyncAmmo))(weapon, ammo);
 }
 
 
@@ -247,7 +272,7 @@ monoList<float *> *LCLHHHKFCFP(void *Weapon,void *CAGCICACKCF,void *HFBDJJDICLN,
 monoList<float *> *LCLHHHKFCFP2(void *Weapon,void *CAGCICACKCF,void *HFBDJJDICLN,bool LDGHPOPPPNL,void *DamageInfo)
 {
     //return ((monoList<float *> * (*)(void*,void*,void*,bool,DamageInfo2_o*))(offset_LCLHHHKFCFP))(Weapon,CAGCICACKCF,HFBDJJDICLN,LDGHPOPPPNL,DamageInfo);
-	return ((monoList<float *> * (*)(void*,void*,void*,bool,void*))(offset_LCLHHHKFCFP))(Weapon,CAGCICACKCF,HFBDJJDICLN,LDGHPOPPPNL,DamageInfo);
+        return ((monoList<float *> * (*)(void*,void*,void*,bool,void*))(offset_LCLHHHKFCFP))(Weapon,CAGCICACKCF,HFBDJJDICLN,LDGHPOPPPNL,DamageInfo);
 
 }
 
@@ -441,8 +466,8 @@ void StartTakeDamage(void *ClosestEnemy) {
     if (!LocalPlayer) return; 
     void *Class_message_DamageInfo_c = Classdamageinfo;
     if(Class_message_DamageInfo_c) {
-	auto DamageInfo = (DamageInfo2_o *)((void * (*)(void *))(BNJIPPIIMDF1616))(Class_message_DamageInfo_c); // damageinfo là class đk còn cái kia là address của class đó
-	  if (DamageInfo) {
+        auto DamageInfo = (DamageInfo2_o *)((void * (*)(void *))(BNJIPPIIMDF1616))(Class_message_DamageInfo_c);
+          if (DamageInfo) {
     void *WeaponHand = GetWeaponOnHand1(LocalPlayer);
     if (WeaponHand) {
     Vector3 firePos = GetHeadPosition(LocalPlayer);
@@ -460,7 +485,7 @@ void StartTakeDamage(void *ClosestEnemy) {
     static bool s_Il2CppMethodIntialized = false;
     if (!s_Il2CppMethodIntialized) {
         ((void (*)(void*, void*))offset_SetStartDamage)(WeaponHand, objectPool);
-        ((void* (*)(void*))offset_PNGAJBCPDNJ)(LocalPlayer); // refresh
+        ((void* (*)(void*))offset_PNGAJBCPDNJ)(LocalPlayer);
         
         s_Il2CppMethodIntialized = true;
     }
@@ -476,11 +501,18 @@ if(headCollider) {
     *(void**)((uintptr_t)objectPool + offset_JMKMBNIBFNA) = get_gameObject(headCollider);
     *(void**)((uintptr_t)objectPool + offset_GHACJPMCEDK) = headCollider;
     *(int*)((uintptr_t)objectPool + offset_OJKBBAOPPIN) = 1;
-    void* sl3 = GKHECDLGAJA(LocalPlayer, objectPool); // fast chabge
+    void* sl3 = GKHECDLGAJA(LocalPlayer, objectPool);
     monoList<float*>* paramCheck = LCLHHHKFCFP(WeaponHand, sl3, headCollider, false, DamageInfo);
     GCommon_TimeService_o *GameSimulation = (GCommon_TimeService_o *)CurrentGameSimulationTimer();
     if (GameSimulation && isEnemyInRangeWeapon(LocalPlayer, ClosestEnemy, WeaponHand)) {
-
+    
+    if (FF_Weapon_CanFire(WeaponHand)) {
+        int currentAmmo = FF_Weapon_GetAmmo(WeaponHand);
+        if (currentAmmo > 0) {
+            FF_Weapon_DoFire(WeaponHand);
+            FF_Weapon_SyncAmmo(WeaponHand, currentAmmo - 1);
+        }
+    }
     
     TakeDamage(ClosestEnemy, baseDamage, PlayerID2, DamageInfo, weaponID, firePos, hitPos, paramCheck, nullptr, 0);
         StartonFiring(LocalPlayer, WeaponHand);
@@ -490,8 +522,8 @@ if(headCollider) {
 }
     
     }
-	
-	}
+        
+        }
 }
 
 
@@ -529,8 +561,8 @@ void StartAimKillSend(void* ClosestEnemy) {
 
     
     
-	auto damageBaseInfo = (DamageInfo2_o *)((void * (*)(void *))(BNJIPPIIMDF1616))(Class_message_DamageInfo_c);
-	  if (damageBaseInfo) {
+        auto damageBaseInfo = (DamageInfo2_o *)((void * (*)(void *))(BNJIPPIIMDF1616))(Class_message_DamageInfo_c);
+          if (damageBaseInfo) {
     static bool hasStartedDamage = false;
     
     
@@ -554,12 +586,12 @@ void StartAimKillSend(void* ClosestEnemy) {
     PlayerID playerID_Enemy = *(PlayerID*)((uintptr_t)ClosestEnemy + offset_KFMGKCJMCAM);
     
     void* sl3 = GKHECDLGAJA(localPlayer, objectPool);
-	
-	
+        
+        
     monoList<float*>* paramCheck = LCLHHHKFCFP(weapon, sl3, headCollider, false, damageBaseInfo);
-	
-	
-	
+        
+        
+        
 
     if (paramCheck && isEnemyInRangeWeapon(localPlayer, ClosestEnemy, weapon)) {
     
@@ -616,7 +648,7 @@ int DamageDelay    = 2;   // safe + fast
 */
 int damageCooldown = 0;
 int delayCounter   = 0;
-int delayLimit     = 2;   // safe + fast
+int delayLimit     = 4;   // safe + fast
 int delayLimit2    = 0;
 int DamageDelay    = 6;   // safe + fast
 

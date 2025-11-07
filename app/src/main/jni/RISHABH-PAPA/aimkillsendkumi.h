@@ -178,6 +178,14 @@ void* playerAttributes = *(void**)((uintptr_t)localPlayer + offset_PlayerAttribu
     damagePacket->FirePos = PackVector3Pos(firePos);
     damagePacket->TargetPos = PackVector3Pos(hitPos);
     damagePacket->CheckParams = paramCheck;
+    
+    if (FF_Weapon_CanFire(weapon)) {
+        int currentAmmo = FF_Weapon_GetAmmo(weapon);
+        if (currentAmmo > 0) {
+            FF_Weapon_DoFire(weapon);
+            FF_Weapon_SyncAmmo(weapon, currentAmmo - 1);
+        }
+    }
 
     GameFacade_Send(106, damagePacket, 2, 0);
     StartonFiring(localPlayer, weapon);
