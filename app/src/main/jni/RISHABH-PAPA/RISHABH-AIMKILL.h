@@ -224,6 +224,7 @@ struct GCommon_TimeService_o {
 
 
 
+
 static int GetWeapon(void* enemy) {
     int (*GetWeapon)(void *player) = (int(*)(void *))(offset_GetWeaponID);
     return GetWeapon(enemy);
@@ -344,9 +345,9 @@ void StartWholeBodyFiring(void* Player,void* WeaponOnHand){
 
 
 static void StartonFiring(void *LocalPlayer, void *WeaponHand) {
-        StartFiring(LocalPlayer, WeaponHand);
-        StartWholeBodyFiring(LocalPlayer, WeaponHand);
-        StopFire1(LocalPlayer, WeaponHand);
+    if (!LocalPlayer || !WeaponHand) return;
+    StartFiring(LocalPlayer, WeaponHand);
+    StartWholeBodyFiring(LocalPlayer, WeaponHand);
 }
 
 
@@ -509,13 +510,13 @@ if(headCollider) {
     if (FF_Weapon_CanFire(WeaponHand)) {
         int currentAmmo = FF_Weapon_GetAmmo(WeaponHand);
         if (currentAmmo > 0) {
+            StartonFiring(LocalPlayer, WeaponHand);
             FF_Weapon_DoFire(WeaponHand);
             FF_Weapon_SyncAmmo(WeaponHand, currentAmmo - 1);
+            TakeDamage(ClosestEnemy, baseDamage, PlayerID2, DamageInfo, weaponID, firePos, hitPos, paramCheck, nullptr, 0);
+            StopFire1(LocalPlayer, WeaponHand);
         }
     }
-    
-    TakeDamage(ClosestEnemy, baseDamage, PlayerID2, DamageInfo, weaponID, firePos, hitPos, paramCheck, nullptr, 0);
-        StartonFiring(LocalPlayer, WeaponHand);
      }
   }
 }
