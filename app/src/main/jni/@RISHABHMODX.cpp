@@ -363,14 +363,8 @@ inline EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
         
         g_IsSetup = true;
     }
-    
- // Window background = black
 
     ImGuiIO &io = ImGui::GetIO();
-        //Darkness();
-        // Thiết lập màu chủ đề
-        //ImVec4* colors = ImGui::GetStyle().Colors;
-
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplAndroid_NewFrame(g_GlWidth, g_GlHeight);
@@ -411,11 +405,16 @@ ImDrawList*draw = ImGui::GetBackgroundDrawList();
     static float animTime = 0.0f;
     animTime += io.DeltaTime;
     
+    ImU32 purpleCream = IM_COL32(147, 112, 219, 255);
+    
+    bool pushedWindowBgColor = false;
     if (!menuCollapsed) {
         ImGui::SetNextWindowSize(ImVec2(520, 550), ImGuiCond_Always);
     } else {
         ImGui::SetNextWindowSize(ImVec2(520, 0), ImGuiCond_Always);
         ImGui::SetNextWindowContentSize(ImVec2(0, 0));
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(147.0f/255.0f, 112.0f/255.0f, 219.0f/255.0f, 1.0f));
+        pushedWindowBgColor = true;
     }
     
     if (ImGui::Begin("DEXXTER | MOBILE ", 0, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoCollapse | (menuCollapsed ? ImGuiWindowFlags_NoScrollbar : 0))) {
@@ -450,17 +449,27 @@ ImDrawList*draw = ImGui::GetBackgroundDrawList();
         titleBarPressed = false;
     }
     
-    ImU32 purpleCream = IM_COL32(147, 112, 219, 255);
-    
     ImDrawList* foregroundDraw = ImGui::GetForegroundDrawList();
+    ImVec2 windowMin = window->Pos;
+    ImVec2 windowMax = ImVec2(window->Pos.x + window->Size.x, window->Pos.y + window->Size.y);
        
-    foregroundDraw->AddRectFilled(
-        titleBarMin,
-        titleBarMax,
-        purpleCream,
-        window->WindowRounding,
-        ImDrawFlags_RoundCornersTop
-    );
+    if (menuCollapsed) {
+        foregroundDraw->AddRectFilled(
+            windowMin,
+            windowMax,
+            purpleCream,
+            window->WindowRounding,
+            ImDrawFlags_RoundCornersAll
+        );
+    } else {
+        foregroundDraw->AddRectFilled(
+            titleBarMin,
+            titleBarMax,
+            purpleCream,
+            window->WindowRounding,
+            ImDrawFlags_RoundCornersTop
+        );
+    }
     
     ImVec2 textSize = ImGui::CalcTextSize("DEXXTER | MOBILE ");
     float titleBarCenterX = window->Pos.x + (window->Size.x * 0.5f);
@@ -474,8 +483,6 @@ ImDrawList*draw = ImGui::GetBackgroundDrawList();
     );
     
     float borderThickness = 1.5f;
-    ImVec2 windowMin = window->Pos;
-    ImVec2 windowMax = ImVec2(window->Pos.x + window->Size.x, window->Pos.y + window->Size.y);
     
     foregroundDraw->AddRect(
         windowMin,
@@ -545,6 +552,11 @@ ImDrawList*draw = ImGui::GetBackgroundDrawList();
     }
     }
     ImGui::End();
+    
+    if (pushedWindowBgColor) {
+        ImGui::PopStyleColor();
+    }
+    
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         return old_eglSwapBuffers(dpy, surface);
